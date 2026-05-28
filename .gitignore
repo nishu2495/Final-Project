@@ -1,0 +1,33 @@
+# Build artifacts
+obj/
+bin/
+*.o
+*.a
+*.so
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backup and temporary files
+*.bak
+*.tmp
+*.temp
+
+# Compiled executables
+EVPlatform
+*.exe
+
+# Data files (optional - uncomment to exclude)
+# data/*.csv
+# data/*.log
+# data/*.dat
+
+# Backup files
+stations_export.csv
+users_export.csv
+backup_*.dat
