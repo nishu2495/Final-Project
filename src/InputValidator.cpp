@@ -1,6 +1,8 @@
 #include "../include/InputValidator.h"
 #include <limits>
 #include <cstdlib>
+#include <sstream>
+#include <iomanip>
 
 int InputValidator::getValidatedIntInput(int minVal, int maxVal) {
     int input;
@@ -47,7 +49,9 @@ double InputValidator::getValidatedDoubleInput() {
 double InputValidator::getValidatedDoubleInput(double minVal, double maxVal) {
     double input;
     while (true) {
-        std::cout << "Enter value (" << minVal << "-" << maxVal << "): ";
+        std::ostringstream rangePrompt;
+        rangePrompt << std::fixed << std::setprecision(2) << minVal << "-" << maxVal;
+        std::cout << "Enter value (" << rangePrompt.str() << "): ";
         std::cin >> input;
         
         if (std::cin.fail()) {
