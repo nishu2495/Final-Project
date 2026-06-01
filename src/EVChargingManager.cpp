@@ -119,20 +119,28 @@ void EVChargingManager::loadUsers() {
     std::string line;
     while (std::getline(file, line)) {
         if (line.empty()) continue;
-        
-        // Parse CSV: userID,name,contact,tier,walletBalance,totalSessions
+
+        // Split line by commas
         std::istringstream iss(line);
-        std::string userID, name, contact, tier;
-        char comma;
-        double balance;
-        int sessions;
-        
-        iss >> userID >> comma >> name >> comma >> contact >> comma 
-            >> tier;
-        
-        User* user = createUserFromTier(tier, userID, name, contact, 0.0);
+        std::string token;
+        std::vector<std::string> parts;
+        while (std::getline(iss, token, ',')) {
+            parts.push_back(token);
+        }
+
+        if (parts.size() < 6) continue; // malformed
+
+        std::string userID = parts[0];
+        std::string name = parts[1];
+        std::string contact = parts[2];
+        std::string tier = parts[3];
+        double balance = atof(parts[4].c_str());
+        int sessions = atoi(parts[5].c_str());
+
+        User* user = createUserFromTier(tier, userID, name, contact, balance);
         if (user != NULL) {
-            user->loadFromFile(line);
+            // ensure totalSessions is set
+            for (int i = 0; i < sessions; ++i) user->addSession();
             users[user->getUserID()] = user;
         }
     }
@@ -196,6 +204,9 @@ bool EVChargingManager::addStation(Station* station) {
     
     std::string id = station->getStationID();
     if (stations.find(id) != stations.end()) {
+        std::cout << "Station with ID '" << id << "' already exists. Existing record:\n";
+        Station* existing = stations[id];
+        if (existing != NULL) existing->displayInfo();
         return false;  // Station already exists
     }
     
@@ -304,6 +315,9 @@ bool EVChargingManager::addUser(User* user) {
     
     std::string id = user->getUserID();
     if (users.find(id) != users.end()) {
+        std::cout << "User with ID '" << id << "' already exists. Existing record:\n";
+        User* existing = users[id];
+        if (existing != NULL) existing->displayInfo();
         return false;  // User already exists
     }
     

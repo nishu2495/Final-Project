@@ -1,6 +1,8 @@
 #include "../include/User.h"
 #include <iostream>
 #include <iomanip>
+#include <vector>
+#include <cstdlib>
 
 User::User() 
     : userID(""), name(""), contact(""), tier("Regular"), 
@@ -92,9 +94,20 @@ void User::saveToFile(std::ofstream& file) const {
 
 void User::loadFromFile(const std::string& line) {
     std::istringstream iss(line);
-    char comma;
-    iss >> userID >> comma >> name >> comma >> contact >> comma
-        >> tier >> comma >> walletBalance >> comma >> totalSessions;
+    std::string token;
+    std::vector<std::string> parts;
+    while (std::getline(iss, token, ',')) {
+        parts.push_back(token);
+    }
+
+    if (parts.size() >= 6) {
+        userID = parts[0];
+        name = parts[1];
+        contact = parts[2];
+        tier = parts[3];
+        walletBalance = atof(parts[4].c_str());
+        totalSessions = atoi(parts[5].c_str());
+    }
 }
 
 bool User::validatePassword(const std::string& pwd) const {

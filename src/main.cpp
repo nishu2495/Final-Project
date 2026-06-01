@@ -116,7 +116,7 @@ void displayStationManagement() {
         switch (choice) {
             case 1: {
                 std::cout << "\nAdd New Station\n";
-                std::string id = InputValidator::getValidatedStringInput("Station ID: ");
+                std::string id = InputValidator::getValidatedStringInput("Station ID (e.g., ST001): ");
                 std::string name = InputValidator::getValidatedStringInput("Station Name: ");
                 double lat = InputValidator::getValidatedLatitude();
                 double lon = InputValidator::getValidatedLongitude();
@@ -145,7 +145,7 @@ void displayStationManagement() {
             case 2: {
                 std::cout << "\nRemove Station\n";
                 manager.displayAllStations();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter Station ID to remove: ");
+                std::string id = InputValidator::getValidatedStringInput("\nEnter Station ID to remove (e.g., ST001): ");
                 if (manager.removeStation(id)) {
                     std::cout << "Station removed!\n";
                 } else {
@@ -164,7 +164,7 @@ void displayStationManagement() {
                 break;
             case 5: {
                 std::cout << "\nSearch Station by ID\n";
-                std::string id = InputValidator::getValidatedStringInput("Enter Station ID: ");
+                std::string id = InputValidator::getValidatedStringInput("Enter Station ID (e.g., ST001): ");
                 Station* st = manager.findStationByID(id);
                 if (st != NULL) {
                     st->displayInfo();
@@ -199,7 +199,7 @@ void displayUserManagement() {
         switch (choice) {
             case 1: {
                 std::cout << "\nRegister New User\n";
-                std::string id = InputValidator::getValidatedStringInput("User ID: ");
+                std::string id = InputValidator::getValidatedStringInput("User ID (e.g., U001): ");
                 std::string name = InputValidator::getValidatedStringInput("Full Name: ");
                 std::string contact = InputValidator::getValidatedPhoneInput();
                 
@@ -227,7 +227,7 @@ void displayUserManagement() {
             case 2: {
                 std::cout << "\nRemove User\n";
                 manager.displayAllUsers();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter User ID to remove: ");
+                std::string id = InputValidator::getValidatedStringInput("\nEnter User ID to remove (e.g., U001): ");
                 if (manager.removeUser(id)) {
                     std::cout << "User removed!\n";
                 } else {
@@ -242,7 +242,7 @@ void displayUserManagement() {
                 break;
             case 4: {
                 std::cout << "\nSearch User by ID\n";
-                std::string id = InputValidator::getValidatedStringInput("Enter User ID: ");
+                std::string id = InputValidator::getValidatedStringInput("Enter User ID (e.g., U001): ");
                 User* user = manager.findUserByID(id);
                 if (user != NULL) {
                     user->displayInfo();
@@ -255,7 +255,7 @@ void displayUserManagement() {
             case 5: {
                 std::cout << "\nView User Details\n";
                 manager.displayAllUsers();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter User ID: ");
+                std::string id = InputValidator::getValidatedStringInput("\nEnter User ID (e.g., U001): ");
                 User* user = manager.findUserByID(id);
                 if (user != NULL) {
                     user->displayInfo();
@@ -293,7 +293,7 @@ void displayActiveBookingsMenu() {
             case 2: {
                 std::cout << "\nCancel Booking\n";
                 manager.displayActiveBookings();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter Booking ID to cancel: ");
+                std::string id = InputValidator::getValidatedStringInput("\nEnter Booking ID to cancel (e.g., B001): ");
                 if (manager.cancelBooking(id)) {
                     std::cout << "Booking cancelled!\n";
                 } else {
@@ -305,7 +305,7 @@ void displayActiveBookingsMenu() {
             case 3: {
                 std::cout << "\nEnd Session\n";
                 manager.displayActiveBookings();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter Booking ID to end: ");
+                std::string id = InputValidator::getValidatedStringInput("\nEnter Booking ID to end (e.g., B001): ");
                 if (manager.endChargingSession(id)) {
                     std::cout << "Session ended!\n";
                 } else {
@@ -336,7 +336,7 @@ void displayUserPortal() {
         switch (choice) {
             case 1: {
                 std::cout << "\nRegister New User\n";
-                std::string id = InputValidator::getValidatedStringInput("User ID: ");
+                std::string id = InputValidator::getValidatedStringInput("User ID (e.g., U001): ");
                 std::string name = InputValidator::getValidatedStringInput("Full Name: ");
                 std::string contact = InputValidator::getValidatedPhoneInput();
                 
@@ -423,7 +423,7 @@ void displayUserDashboard() {
             case 2: {
                 std::cout << "\nBook a Charging Slot\n";
                 manager.displayAllStations();
-                std::string stationID = InputValidator::getValidatedStringInput("\nEnter Station ID: ");
+                    std::string stationID = InputValidator::getValidatedStringInput("\nEnter Station ID (e.g., ST001): ");
                 int minutes = InputValidator::getValidatedIntInput(15, 480);
                 
                 if (manager.bookSlot(loggedInUser->getUserID(), stationID, minutes)) {
@@ -458,7 +458,7 @@ void displayUserDashboard() {
                             std::cout << (i+1) << ". " << bookings[i]->getBookingID() << std::endl;
                         }
                     }
-                    std::string id = InputValidator::getValidatedStringInput("Enter Booking ID: ");
+                    std::string id = InputValidator::getValidatedStringInput("Enter Booking ID (e.g., B001): ");
                     if (manager.startChargingSession(id)) {
                         std::cout << "Charging session started!\n";
                     } else {
@@ -479,7 +479,7 @@ void displayUserDashboard() {
                             std::cout << (i+1) << ". " << bookings[i]->getBookingID() << std::endl;
                         }
                     }
-                    std::string id = InputValidator::getValidatedStringInput("Enter Booking ID: ");
+                    std::string id = InputValidator::getValidatedStringInput("Enter Booking ID (e.g., B001): ");
                     if (manager.endChargingSession(id)) {
                         std::cout << "Charging session ended!\n";
                     } else {
