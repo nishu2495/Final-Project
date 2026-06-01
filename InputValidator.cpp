@@ -1,4 +1,4 @@
-#include "../include/InputValidator.h"
+#include "InputValidator.h"
 #include <limits>
 #include <cstdlib>
 #include <sstream>
@@ -177,6 +177,6 @@ void InputValidator::displaySeparator(const std::string& title) {
         std::cout << "\n=================================================="
                   << "==================================================\n";
     } else {
-        std::cout << "\n========== " << title << " ==========\n";
+        std::cout << "\n========== " << title << " ==========" << std::endl;
     }
 }

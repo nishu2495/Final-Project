@@ -1,3 +1,4 @@
+// Copy of src/main.cpp: full implementation
 #include "EVChargingManager.h"
 #include "InputValidator.h"
 #include "Station.h"
@@ -398,7 +399,7 @@ void displayUserDashboard() {
     int choice;
     while (true) {
         InputValidator::clearScreen();
-        std::cout << "\n========== WELCOME, " << loggedInUser->getName() << " ==========\n";
+        std::cout << "\n========== WELCOME, " << loggedInUser->getName() << " ==========" << std::endl;
         std::cout << "Current Tier: " << loggedInUser->getTier() << std::endl;
         std::cout << "Wallet Balance: Rs. " << std::fixed << std::setprecision(2) 
                  << loggedInUser->getWalletBalance() << std::endl << std::endl;

@@ -1,6 +1,6 @@
-#include "../include/Booking.h"
-#include "../include/Station.h"
-#include "../include/User.h"
+#include "Booking.h"
+#include "Station.h"
+#include "User.h"
 #include <iostream>
 #include <iomanip>
 #include <ctime>

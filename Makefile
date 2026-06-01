@@ -5,29 +5,17 @@ CXX = g++
 CXXFLAGS = -std=c++98 -Wall -pedantic -O2
 LDFLAGS = 
 
-# Source and header directories
-SRC_DIR = src
-INC_DIR = include
+# Source and header directories (flat root layout)
+SRC_DIR = .
+INC_DIR = .
 OBJ_DIR = obj
 BIN_DIR = bin
 
 # Target executable
 TARGET = EVPlatform
 
-# Source files
-SOURCES = $(SRC_DIR)/main.cpp \
-          $(SRC_DIR)/Station.cpp \
-          $(SRC_DIR)/ACStation.cpp \
-          $(SRC_DIR)/DCFastStation.cpp \
-          $(SRC_DIR)/DCUltraFastStation.cpp \
-          $(SRC_DIR)/User.cpp \
-          $(SRC_DIR)/RegularUser.cpp \
-          $(SRC_DIR)/PremiumUser.cpp \
-          $(SRC_DIR)/FleetUser.cpp \
-          $(SRC_DIR)/Booking.cpp \
-          $(SRC_DIR)/ChargingSession.cpp \
-          $(SRC_DIR)/InputValidator.cpp \
-          $(SRC_DIR)/EVChargingManager.cpp
+# Source files (all root .cpp files)
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 
 # Object files
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))

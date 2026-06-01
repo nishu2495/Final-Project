@@ -1,0 +1,27 @@
+# Dev-C++ Project (conservative/sample)
+# This is a simple, portable project file you can open/import in Dev-C++.
+# If your Dev-C++ version expects a different format, create a new project
+# in the IDE and add the listed source files (see README_DEV_CPP.md).
+
+Name: Final-Project
+Directory: .
+ExeOutput: EVPlatform.exe
+ObjectOutput: obj
+Compiler: g++
+CompilerOptions: -std=c++11 -O2 -Wall
+LinkerOptions:
+
+Files:
+main.cpp
+Station.cpp
+Booking.cpp
+ACStation.cpp
+DCFastStation.cpp
+DCUltraFastStation.cpp
+User.cpp
+RegularUser.cpp
+PremiumUser.cpp
+FleetUser.cpp
+ChargingSession.cpp
+InputValidator.cpp
+EVChargingManager.cpp

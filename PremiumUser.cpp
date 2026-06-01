@@ -1,4 +1,4 @@
-#include "../include/PremiumUser.h"
+#include "PremiumUser.h"
 #include <iostream>
 #include <iomanip>
 
