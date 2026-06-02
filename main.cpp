@@ -24,6 +24,9 @@ void displayUserManagement();
 void displayActiveBookingsMenu();
 void displayUserPortal();
 void displayUserDashboard();
+void displayWalletTopUpForUser();
+void displayWalletTopUpForAdmin();
+void displayWalletManagementMenu();
 void displayAnalyticsMenu();
 void displayMaintenanceMenu();
 void initializeSampleData();
@@ -32,10 +35,16 @@ void displayMainMenu() {
     int choice;
     while (true) {
         InputValidator::displayCenteredTitle("SMART EV CHARGING NETWORK OPERATIONS PLATFORM");
-        InputValidator::displayCenteredBlock("ChargeGrid Mobility Pvt. Ltd.\n\n1. Admin / Operator Portal\n2. User Simulation Portal\n3. Analytics & Reports\n4. System Backup & Restore\n5. Exit\n");
-        choice = InputValidator::getValidatedIntInput(1, 5, "Enter choice (1-5): ");
-        
+    InputValidator::displayCenteredBlock("ChargeGrid Mobility Pvt. Ltd.\n\n1. Admin / Operator Portal\n2. User Simulation Portal\n3. Analytics & Reports\n4. System Backup & Restore\n0. Exit\n");
+    choice = InputValidator::getValidatedIntInput(0, 4, "Enter choice (0-4): ");
         switch (choice) {
+            case 0:
+                manager.saveAllData();
+                InputValidator::clearScreen();
+                InputValidator::displayCenteredTitle("GOODBYE");
+                InputValidator::displayCenteredBlock("Thank you for using ChargeGrid Platform!\n");
+                exit(0);
+                break;
             case 1:
                 displayAdminPortal();
                 break;
@@ -48,10 +57,6 @@ void displayMainMenu() {
             case 4:
                 displayMaintenanceMenu();
                 break;
-            case 5:
-                manager.saveAllData();
-                InputValidator::displayCenteredBlock("Thank you for using ChargeGrid Platform!\n");
-                exit(0);
             default:
                 std::cout << "Invalid choice!\n";
         }
@@ -62,10 +67,12 @@ void displayAdminPortal() {
     int choice;
     while (true) {
         InputValidator::displayCenteredTitle("ADMIN / OPERATOR PORTAL");
-        InputValidator::displayCenteredBlock("1. Station Management\n2. User Management\n3. View Real-time Station Status\n4. Manage Active Bookings\n5. Back to Main Menu\n");
-        choice = InputValidator::getValidatedIntInput(1, 5, "Enter choice (1-5): ");
+        InputValidator::displayCenteredBlock("1. Station Management\n2. User Management\n3. Wallet Management\n4. View Real-time Station Status\n5. Manage Active Bookings\n0. Back to Main Menu\n");
+        choice = InputValidator::getValidatedIntInput(0, 5, "Enter choice (0-5): ");
         
         switch (choice) {
+            case 0:
+                return;
             case 1:
                 displayStationManagement();
                 break;
@@ -73,14 +80,15 @@ void displayAdminPortal() {
                 displayUserManagement();
                 break;
             case 3:
+                displayWalletManagementMenu();
+                break;
+            case 4:
                 manager.displayAllStations();
                 InputValidator::pauseForUser();
                 break;
-            case 4:
+            case 5:
                 displayActiveBookingsMenu();
                 break;
-            case 5:
-                return;
             default:
                 std::cout << "Invalid choice!\n";
         }
@@ -91,10 +99,12 @@ void displayStationManagement() {
     int choice;
     while (true) {
         InputValidator::displayCenteredTitle("STATION MANAGEMENT");
-        InputValidator::displayCenteredBlock("1. Add New Charging Station\n2. Remove Station\n3. Update Station Status\n4. List All Stations\n5. Search Station by ID\n6. Back to Admin Menu\n");
-        choice = InputValidator::getValidatedIntInput(1, 6, "Enter choice (1-6): ");
+        InputValidator::displayCenteredBlock("1. Add New Charging Station\n2. Remove Station\n3. Update Station Status\n4. List All Stations\n5. Search Station by ID\n0. Back to Admin Menu\n");
+        choice = InputValidator::getValidatedIntInput(0, 5, "Enter choice (0-5): ");
         
         switch (choice) {
+            case 0:
+                return;
             case 1: {
                 InputValidator::displayCenteredTitle("Add New Station");
                 std::string id = InputValidator::boxedInputString("Station ID (e.g., ST001): ");
@@ -154,8 +164,6 @@ void displayStationManagement() {
                 InputValidator::pauseForUser();
                 break;
             }
-            case 6:
-                return;
             default:
                 std::cout << "Invalid choice!\n";
         }
@@ -166,15 +174,32 @@ void displayUserManagement() {
     int choice;
     while (true) {
         InputValidator::displayCenteredTitle("USER MANAGEMENT");
-        InputValidator::displayCenteredBlock("1. Add New User (Register)\n2. Remove User\n3. List All Users\n4. Search User by ID\n5. View User Details\n6. Back to Admin Menu\n");
-        choice = InputValidator::getValidatedIntInput(1, 6, "Enter choice (1-6): ");
+        InputValidator::displayCenteredBlock("1. Add New User (Register)\n2. Remove User\n3. List All Users\n4. Search User by ID\n5. View User Details\n6. Top-up User Wallet\n0. Back to Admin Menu\n");
+        choice = InputValidator::getValidatedIntInput(0, 6, "Enter choice (0-6): ");
         
         switch (choice) {
+            case 0:
+                return;
             case 1: {
                 InputValidator::displayCenteredTitle("Register New User");
-                std::string id = InputValidator::boxedInputString("User ID (e.g., U001): ");
-                std::string name = InputValidator::boxedInputString("Full Name: ");
-                std::string contact = InputValidator::getValidatedPhoneInput();
+                std::string id = InputValidator::boxedInputString("User ID (e.g., U001) (0 to cancel): ", true);
+                if (id.empty()) {
+                    std::cout << "User registration cancelled.\n";
+                    InputValidator::pauseForUser();
+                    break;
+                }
+                std::string name = InputValidator::boxedInputString("Full Name (0 to cancel): ", true);
+                if (name.empty()) {
+                    std::cout << "User registration cancelled.\n";
+                    InputValidator::pauseForUser();
+                    break;
+                }
+                std::string contact = InputValidator::getValidatedPhoneInput(true);
+                if (contact.empty()) {
+                    std::cout << "User registration cancelled.\n";
+                    InputValidator::pauseForUser();
+                    break;
+                }
                 
                 int tier = InputValidator::boxedInputInt("User Tier:\n1. Regular\n2. Premium\n3. Fleet\n", 1, 3);
                 
@@ -237,8 +262,10 @@ void displayUserManagement() {
                 InputValidator::pauseForUser();
                 break;
             }
-            case 6:
-                return;
+            case 6: {
+                displayWalletTopUpForAdmin();
+                break;
+            }
             default:
                 std::cout << "Invalid choice!\n";
         }
@@ -249,10 +276,12 @@ void displayActiveBookingsMenu() {
     int choice;
     while (true) {
         InputValidator::displayCenteredTitle("ACTIVE BOOKINGS");
-        InputValidator::displayCenteredBlock("1. View All Active Bookings\n2. Cancel Booking (Admin)\n3. Force End Session\n4. Back to Admin Menu\n");
-        choice = InputValidator::getValidatedIntInput(1, 4, "Enter choice (1-4): ");
+        InputValidator::displayCenteredBlock("1. View All Active Bookings\n2. Cancel Booking (Admin)\n3. Force End Session\n0. Back to Admin Menu\n");
+        choice = InputValidator::getValidatedIntInput(0, 3, "Enter choice (0-3): ");
         
         switch (choice) {
+            case 0:
+                return;
             case 1:
                 manager.displayActiveBookings();
                 InputValidator::pauseForUser();
@@ -281,8 +310,6 @@ void displayActiveBookingsMenu() {
                 InputValidator::pauseForUser();
                 break;
             }
-            case 4:
-                return;
             default:
                 std::cout << "Invalid choice!\n";
         }
@@ -293,15 +320,32 @@ void displayUserPortal() {
     int choice;
     while (true) {
         InputValidator::displayCenteredTitle("USER SIMULATION PORTAL");
-        InputValidator::displayCenteredBlock("1. Register New User\n2. Login\n3. Back to Main Menu\n");
-        choice = InputValidator::getValidatedIntInput(1, 3, "Enter choice (1-3): ");
+        InputValidator::displayCenteredBlock("1. Register New User\n2. Login\n0. Back to Main Menu\n");
+        choice = InputValidator::getValidatedIntInput(0, 2, "Enter choice (0-2): ");
         
         switch (choice) {
+            case 0:
+                return;
             case 1: {
                 InputValidator::displayCenteredTitle("Register New User");
-                std::string id = InputValidator::boxedInputString("User ID (e.g., U001): ");
-                std::string name = InputValidator::boxedInputString("Full Name: ");
-                std::string contact = InputValidator::getValidatedPhoneInput();
+                std::string id = InputValidator::boxedInputString("User ID (e.g., U001) (0 to cancel): ", true);
+                if (id.empty()) {
+                    std::cout << "User registration cancelled.\n";
+                    InputValidator::pauseForUser();
+                    break;
+                }
+                std::string name = InputValidator::boxedInputString("Full Name (0 to cancel): ", true);
+                if (name.empty()) {
+                    std::cout << "User registration cancelled.\n";
+                    InputValidator::pauseForUser();
+                    break;
+                }
+                std::string contact = InputValidator::getValidatedPhoneInput(true);
+                if (contact.empty()) {
+                    std::cout << "User registration cancelled.\n";
+                    InputValidator::pauseForUser();
+                    break;
+                }
                 
                 int tier = InputValidator::boxedInputInt("User Tier:\n1. Regular\n2. Premium\n3. Fleet\n", 1, 3);
                 
@@ -346,8 +390,6 @@ void displayUserPortal() {
                 }
                 break;
             }
-            case 3:
-                return;
             default:
                 std::cout << "Invalid choice!\n";
         }
@@ -365,11 +407,16 @@ void displayUserDashboard() {
         std::ostringstream status;
         status << "Current Tier: " << loggedInUser->getTier() << "\n";
         status << "Wallet Balance: Rs. " << std::fixed << std::setprecision(2) << loggedInUser->getWalletBalance();
-        InputValidator::displayCenteredBlock(welcome.str() + "\n" + status.str() + "\n\n1. Search Available Stations\n2. Book a Charging Slot\n3. View My Bookings\n4. Start Charging Session\n5. End Charging Session\n6. View Charging History\n7. Logout\n");
+        InputValidator::displayCenteredBlock(welcome.str() + "\n" + status.str() + "\n\n1. Search Available Stations\n2. Book a Charging Slot\n3. View My Bookings\n4. Start Charging Session\n5. End Charging Session\n6. View Charging History\n7. Top-up Wallet\n0. Logout\n");
         
-        choice = InputValidator::getValidatedIntInput(1, 7, "Enter choice (1-7): ");
+        choice = InputValidator::getValidatedIntInput(0, 7, "Enter choice (0-7): ");
         
         switch (choice) {
+            case 0:
+                loggedInUser = NULL;
+                std::cout << "Logged out successfully!\n";
+                InputValidator::pauseForUser();
+                return;
             case 1: {
                 InputValidator::displayCenteredBlock("Available Charging Stations\n");
                 manager.displayAllStations();
@@ -451,11 +498,98 @@ void displayUserDashboard() {
                 InputValidator::pauseForUser();
                 break;
             }
-            case 7:
-                loggedInUser = NULL;
-                std::cout << "Logged out successfully!\n";
-                InputValidator::pauseForUser();
+            case 7: {
+                displayWalletTopUpForUser();
+                break;
+            }
+            default:
+                std::cout << "Invalid choice!\n";
+        }
+    }
+}
+
+void displayWalletTopUpForUser() {
+    if (loggedInUser == NULL) return;
+    InputValidator::displayCenteredTitle("WALLET TOP-UP");
+    std::ostringstream prompt;
+    prompt << "Current Balance: Rs. " << std::fixed << std::setprecision(2)
+           << loggedInUser->getWalletBalance() << "\n";
+    prompt << "Enter amount to top-up (0 to cancel):";
+    double amount = InputValidator::boxedInputDouble(prompt.str(), 0.0, 1000000.0);
+    if (amount == 0.0) {
+        std::cout << "Wallet top-up cancelled.\n";
+        InputValidator::pauseForUser();
+        return;
+    }
+    if (manager.topUpUserWallet(loggedInUser->getUserID(), amount)) {
+        std::cout << "Top-up successful! New balance: Rs. "
+                  << std::fixed << std::setprecision(2)
+                  << loggedInUser->getWalletBalance() << std::endl;
+    } else {
+        std::cout << "Top-up failed. Please try again." << std::endl;
+    }
+    InputValidator::pauseForUser();
+}
+
+void displayWalletTopUpForAdmin() {
+    InputValidator::displayCenteredTitle("ADMIN WALLET TOP-UP");
+    manager.displayAllUsers();
+    std::string id = InputValidator::boxedInputString("Enter User ID to top-up (e.g., U001): ");
+    User* user = manager.findUserByID(id);
+    if (user == NULL) {
+        std::cout << "User not found!" << std::endl;
+        InputValidator::pauseForUser();
+        return;
+    }
+    std::ostringstream prompt;
+    prompt << "Current Balance for " << user->getName() << " (" << user->getUserID() << "): Rs. "
+           << std::fixed << std::setprecision(2) << user->getWalletBalance() << "\n";
+    prompt << "Enter amount to top-up (0 to cancel):";
+    double amount = InputValidator::boxedInputDouble(prompt.str(), 0.0, 1000000.0);
+    if (amount == 0.0) {
+        std::cout << "Wallet top-up cancelled.\n";
+        InputValidator::pauseForUser();
+        return;
+    }
+    if (manager.topUpUserWallet(id, amount)) {
+        std::cout << "Top-up successful! New balance: Rs. "
+                  << std::fixed << std::setprecision(2)
+                  << user->getWalletBalance() << std::endl;
+    } else {
+        std::cout << "Top-up failed. Please try again." << std::endl;
+    }
+    InputValidator::pauseForUser();
+}
+
+void displayWalletManagementMenu() {
+    int choice;
+    while (true) {
+        InputValidator::displayCenteredTitle("WALLET MANAGEMENT");
+        InputValidator::displayCenteredBlock("1. List All Wallet Balances\n2. Top-up User Wallet\n3. Search User Wallet by ID\n0. Back to Admin Portal\n");
+        choice = InputValidator::getValidatedIntInput(0, 3, "Enter choice (0-3): ");
+
+        switch (choice) {
+            case 0:
                 return;
+            case 1:
+                manager.displayAllUsers();
+                InputValidator::pauseForUser();
+                break;
+            case 2:
+                displayWalletTopUpForAdmin();
+                break;
+            case 3: {
+                InputValidator::displayCenteredTitle("SEARCH USER WALLET");
+                std::string id = InputValidator::boxedInputString("Enter User ID (e.g., U001): ");
+                User* user = manager.findUserByID(id);
+                if (user == NULL) {
+                    std::cout << "User not found!" << std::endl;
+                } else {
+                    user->displayInfo();
+                }
+                InputValidator::pauseForUser();
+                break;
+            }
             default:
                 std::cout << "Invalid choice!\n";
         }
@@ -466,11 +600,13 @@ void displayAnalyticsMenu() {
     int choice;
     while (true) {
         InputValidator::displayCenteredTitle("ANALYTICS & REPORTS");
-        InputValidator::displayCenteredBlock("1. Revenue Summary Report\n2. Station Utilization Report\n3. Top 10 Highest Revenue Stations\n4. List Inactive Users\n5. System Analytics Report\n6. Export Report to File\n7. Back to Main Menu\n");
+        InputValidator::displayCenteredBlock("1. Revenue Summary Report\n2. Station Utilization Report\n3. Top 10 Highest Revenue Stations\n4. List Inactive Users\n5. System Analytics Report\n6. Export Report to File\n0. Back to Main Menu\n");
         
-        choice = InputValidator::getValidatedIntInput(1, 7, "Enter choice (1-7): ");
+        choice = InputValidator::getValidatedIntInput(0, 6, "Enter choice (0-6): ");
         
         switch (choice) {
+            case 0:
+                return;
             case 1:
                 manager.generateRevenueReport();
                 InputValidator::pauseForUser();
@@ -514,8 +650,6 @@ void displayAnalyticsMenu() {
                 InputValidator::pauseForUser();
                 break;
             }
-            case 7:
-                return;
             default:
                 std::cout << "Invalid choice!\n";
         }
@@ -526,11 +660,13 @@ void displayMaintenanceMenu() {
     int choice;
     while (true) {
         InputValidator::displayCenteredTitle("SYSTEM MAINTENANCE");
-        InputValidator::displayCenteredBlock("1. Create Full System Backup\n2. Restore System from Backup\n3. Export All Stations to CSV\n4. Export All Users to CSV\n5. System Status\n6. Back to Main Menu\n");
+        InputValidator::displayCenteredBlock("1. Create Full System Backup\n2. Restore System from Backup\n3. Export All Stations to CSV\n4. Export All Users to CSV\n5. System Status\n0. Back to Main Menu\n");
         
-        choice = InputValidator::getValidatedIntInput(1, 6, "Enter choice (1-6): ");
+        choice = InputValidator::getValidatedIntInput(0, 5, "Enter choice (0-5): ");
         
         switch (choice) {
+            case 0:
+                return;
             case 1:
                 manager.backupSystem("data/backup.dat");
                 InputValidator::pauseForUser();
@@ -551,8 +687,6 @@ void displayMaintenanceMenu() {
                 manager.displaySystemStatus();
                 InputValidator::pauseForUser();
                 break;
-            case 6:
-                return;
             default:
                 std::cout << "Invalid choice!\n";
         }

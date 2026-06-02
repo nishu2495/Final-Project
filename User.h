@@ -37,6 +37,8 @@ public:
     void addSession();
     void addBalance(double amount);
     void deductBalance(double amount);
+    // Force deduction even if balance insufficient (allows negative balance)
+    void forceDeductBalance(double amount);
 
     // Virtual functions
     virtual double calculateDiscount(double basePrice) const;

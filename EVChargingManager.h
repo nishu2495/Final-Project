@@ -64,6 +64,7 @@ public:
     std::vector<Booking*> findUserBookings(const std::string& userID) const;
     bool cancelBooking(const std::string& bookingID);
     void displayActiveBookings() const;
+    bool topUpUserWallet(const std::string& userID, double amount);
 
     // Charging session operations
     bool startChargingSession(const std::string& bookingID);
@@ -99,6 +100,8 @@ public:
 
 private:
     std::string generateID(const std::string& prefix);
+    int nextBookingNumber;
+    int nextSessionNumber;
     User* createUserFromTier(const std::string& tier, std::string id, 
                             std::string name, std::string contact, double balance);
     Station* createStationFromType(const std::string& type);

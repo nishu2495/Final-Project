@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <cmath>
 #include <cstdlib>
+#include "InputValidator.h"
 
 EVChargingManager::EVChargingManager() 
     : dataPath("data/"), 
@@ -18,7 +19,9 @@ EVChargingManager::EVChargingManager()
       usersFile("data/users.csv"),
       bookingsFile("data/bookings.csv"),
       sessionsFile("data/sessions.log"),
-      backupFile("data/backup.dat") {
+      backupFile("data/backup.dat"),
+      nextBookingNumber(1),
+      nextSessionNumber(1) {
 }
 
 EVChargingManager::~EVChargingManager() {
@@ -176,6 +179,20 @@ void EVChargingManager::loadBookings() {
             booking->setEndTime(endTime);
             booking->setStatus(status);
             activeBookings.push_back(booking);
+
+            if (bookingID.length() > 1 && bookingID[0] == 'B') {
+                bool digitsOnly = true;
+                for (size_t i = 1; i < bookingID.length(); ++i) {
+                    if (bookingID[i] < '0' || bookingID[i] > '9') {
+                        digitsOnly = false;
+                        break;
+                    }
+                }
+                if (digitsOnly && bookingID.length() <= 7) {
+                    int value = atoi(bookingID.c_str() + 1);
+                    if (value >= nextBookingNumber) nextBookingNumber = value + 1;
+                }
+            }
         }
     }
     file.close();
@@ -195,6 +212,21 @@ void EVChargingManager::loadSessions() {
         ChargingSession session;
         session.loadFromFile(line);
         completedSessions.push_back(session);
+
+        std::string sessionID = session.getSessionID();
+        if (sessionID.length() > 1 && sessionID[0] == 'S') {
+            bool digitsOnly = true;
+            for (size_t i = 1; i < sessionID.length(); ++i) {
+                if (sessionID[i] < '0' || sessionID[i] > '9') {
+                    digitsOnly = false;
+                    break;
+                }
+            }
+            if (digitsOnly && sessionID.length() <= 7) {
+                int value = atoi(sessionID.c_str() + 1);
+                if (value >= nextSessionNumber) nextSessionNumber = value + 1;
+            }
+        }
     }
     file.close();
 }
@@ -227,15 +259,22 @@ bool EVChargingManager::endChargingSession(const std::string& bookingID) {
     long bookedSec = b->getDurationInSeconds();
 
     int billedMinutes = 0;
-    if (actualSec < bookedSec) {
-        // Force-stop or shortened session: charge full booking period
+    // Billing rule: for money calculation, 1 second = 1 minute (simulation mode).
+    // bookedSec is already in simulation-seconds (see Booking::getDurationInSeconds()).
+    // If booking was never started (still in Booked state), charge the full booked period.
+    if (!b->isActive()) {
+        billedMinutes = b->getSlotDuration();
+    } else if (actualSec < bookedSec) {
+        // Active but force-stopped early: charge full booking period
         billedMinutes = b->getSlotDuration();
     } else {
-        billedMinutes = static_cast<int>((actualSec + 59) / 60);
+        // Normal end: each real second counts as one billing minute (simulation rule)
+        billedMinutes = static_cast<int>(actualSec);
     }
 
     double pricePerMin = b->getStation()->calculatePricePerMin(b->getUser());
     double finalCost = pricePerMin * billedMinutes;
+    // Energy calculation uses billedMinutes as minutes (simulation mapping applies here too)
     double energy = b->getStation()->getPowerRating() * (billedMinutes / 60.0);
 
     // Create a charging session record
@@ -254,7 +293,40 @@ bool EVChargingManager::endChargingSession(const std::string& bookingID) {
     User* u = b->getUser();
     Station* s = b->getStation();
     if (u != NULL) {
-        u->deductBalance(finalCost);
+        double balance = u->getWalletBalance();
+        if (balance < finalCost) {
+            std::ostringstream msg;
+            msg << "Insufficient wallet balance. Required: Rs. " << std::fixed << std::setprecision(2) << finalCost << "\n";
+            msg << "Current Balance: Rs. " << std::fixed << std::setprecision(2) << balance << "\n";
+            msg << "Choose: 1) Top-up now  2) Allow negative balance  3) Cancel session end\n";
+            InputValidator::displayCenteredBlock(msg.str());
+            int opt = InputValidator::getValidatedIntInput(1, 3, "Enter choice (1-3): ");
+            if (opt == 1) {
+                // Loop until enough balance or user cancels by entering 0
+                while (u->getWalletBalance() < finalCost) {
+                    double add = InputValidator::boxedInputDouble("Enter top-up amount:", 0.0, 1e9);
+                    if (add <= 0.0) {
+                        // Cancel top-up
+                        InputValidator::displayCenteredBlock("Top-up cancelled. Session end aborted.\n");
+                        // Revert station occupied slots increment if needed (session remains active/booked)
+                        saveAllData();
+                        return false;
+                    }
+                    u->addBalance(add);
+                }
+                u->deductBalance(finalCost);
+            } else if (opt == 2) {
+                // Force allow negative balance
+                u->forceDeductBalance(finalCost);
+            } else {
+                // Cancel ending the session
+                InputValidator::displayCenteredBlock("Session end cancelled. Returning to menu.\n");
+                saveAllData();
+                return false;
+            }
+        } else {
+            u->deductBalance(finalCost);
+        }
         u->addSession();
     }
     if (s != NULL) {
@@ -282,7 +354,41 @@ void EVChargingManager::logSession(const ChargingSession& session) {
     }
 }
 
+static std::string formatSequentialID(const std::string& prefix, int number) {
+    std::ostringstream oss;
+    // Use 4 digits for booking/session numbering (e.g., B0001)
+    oss << prefix << std::setw(4) << std::setfill('0') << number;
+    return oss.str();
+}
+
+static bool bookingIDExists(const std::vector<Booking*>& bookings, const std::string& bookingID) {
+    for (size_t i = 0; i < bookings.size(); ++i) {
+        if (bookings[i] != NULL && bookings[i]->getBookingID() == bookingID) {
+            return true;
+        }
+    }
+    return false;
+}
+
 std::string EVChargingManager::generateID(const std::string& prefix) {
+    if (prefix == "B") {
+        std::string id;
+        do {
+            id = formatSequentialID(prefix, nextBookingNumber);
+            ++nextBookingNumber;
+        } while (bookingIDExists(activeBookings, id));
+        return id;
+    }
+    if (prefix == "S") {
+        std::ostringstream oss;
+        std::string id;
+        do {
+            id = formatSequentialID(prefix, nextSessionNumber);
+            ++nextSessionNumber;
+        } while (false); // session IDs are not reused in this demo
+        return id;
+    }
+
     std::ostringstream oss;
     oss << prefix << time(NULL) << (rand() % 1000);
     return oss.str();
@@ -443,10 +549,19 @@ void EVChargingManager::displayAllUsers() const {
         if (it->second != NULL) {
             std::cout << count << ". " << it->second->getUserID() << " | "
                      << it->second->getName() << " | "
-                     << it->second->getTier() << std::endl;
+                     << it->second->getTier() << " | Balance: Rs. "
+                     << std::fixed << std::setprecision(2) << it->second->getWalletBalance() << std::endl;
             count++;
         }
     }
+}
+
+bool EVChargingManager::topUpUserWallet(const std::string& userID, double amount) {
+    User* user = findUserByID(userID);
+    if (user == NULL || amount <= 0.0) return false;
+    user->addBalance(amount);
+    saveAllData();
+    return true;
 }
 
 std::vector<User*> EVChargingManager::findInactiveUsers(int days) const {
@@ -679,6 +794,8 @@ void EVChargingManager::clearAllData() {
     }
     activeBookings.clear();
     completedSessions.clear();
+    nextBookingNumber = 1;
+    nextSessionNumber = 1;
 }
 
 User* EVChargingManager::createUserFromTier(const std::string& tier, std::string id, std::string name, std::string contact, double balance) {

@@ -85,10 +85,18 @@ double InputValidator::getValidatedDoubleInput(double minVal, double maxVal) {
 }
 
 std::string InputValidator::getValidatedStringInput(const std::string& prompt) {
+    return getValidatedStringInput(prompt, false);
+}
+
+std::string InputValidator::getValidatedStringInput(const std::string& prompt, bool allowCancel) {
     std::string input;
     while (true) {
         std::cout << prompt;
         std::getline(std::cin, input);
+        
+        if (allowCancel && input == "0") {
+            return std::string("");
+        }
         
         if (input.empty()) {
             std::cout << "Input cannot be empty! Please try again.\n";
@@ -101,10 +109,19 @@ std::string InputValidator::getValidatedStringInput(const std::string& prompt) {
 
 std::string InputValidator::getValidatedStringInput(const std::string& prompt, 
                                                      int minLen, int maxLen) {
+    return getValidatedStringInput(prompt, minLen, maxLen, false);
+}
+
+std::string InputValidator::getValidatedStringInput(const std::string& prompt, 
+                                                     int minLen, int maxLen, bool allowCancel) {
     std::string input;
     while (true) {
         std::cout << prompt;
         std::getline(std::cin, input);
+        
+        if (allowCancel && input == "0") {
+            return std::string("");
+        }
         
         if (input.empty() || input.length() < minLen) {
             std::cout << "Input too short! Minimum " << minLen << " characters.\n";
@@ -121,10 +138,18 @@ std::string InputValidator::getValidatedStringInput(const std::string& prompt,
 }
 
 std::string InputValidator::getValidatedPhoneInput() {
+    return getValidatedPhoneInput(false);
+}
+
+std::string InputValidator::getValidatedPhoneInput(bool allowCancel) {
     std::string input;
     while (true) {
         std::cout << "Enter phone number (10 digits): ";
         std::getline(std::cin, input);
+        
+        if (allowCancel && input == "0") {
+            return std::string("");
+        }
         
         if (input.length() != 10) {
             std::cout << "Invalid phone number! Must be 10 digits.\n";
@@ -233,29 +258,52 @@ void InputValidator::displayCenteredTitle(const std::string& title) {
     const int width = 80;
     int pad = (int)((width - (int)title.length()) / 2);
     if (pad < 0) pad = 0;
-    // A couple of blank lines to visually center vertically
-    std::cout << "\n\n";
+
+    std::cout << "\n" << std::string(width, '=') << std::endl;
     for (int i = 0; i < pad; ++i) std::cout << ' ';
-    std::cout << prefix << title << suffix << std::endl << std::endl;
+    std::cout << prefix << title << suffix << std::endl;
+    std::cout << std::string(width, '=') << std::endl << std::endl;
 }
 
 void InputValidator::displayCenteredBlock(const std::string& text) {
     std::string prefix = _currentColor.empty() ? "" : _currentColor;
     std::string suffix = _currentColor.empty() ? "" : ANSI_RESET;
-    const int width = 80;
+    const int termWidth = 80;
+    std::vector<std::string> lines;
     std::string line;
 
     for (size_t i = 0; i <= text.length(); ++i) {
         if (i == text.length() || text[i] == '\n') {
-            int pad = (int)((width - (int)line.length()) / 2);
-            if (pad < 0) pad = 0;
-            for (int j = 0; j < pad; ++j) std::cout << ' ';
-            std::cout << prefix << line << suffix << std::endl;
+            lines.push_back(line);
             line.clear();
         } else {
             line += text[i];
         }
     }
+
+    size_t maxLineLength = 0;
+    for (size_t i = 0; i < lines.size(); ++i) {
+        if (lines[i].length() > maxLineLength) {
+            maxLineLength = lines[i].length();
+        }
+    }
+
+    const int boxWidth = (int)std::min<size_t>(maxLineLength + 4, termWidth - 10);
+    int pad = (termWidth - boxWidth) / 2;
+    if (pad < 0) pad = 0;
+    std::string left(pad, ' ');
+    std::string border = "+" + std::string(boxWidth - 2, '-') + "+";
+
+    std::cout << left << prefix << border << suffix << std::endl;
+    for (size_t i = 0; i < lines.size(); ++i) {
+        std::string content = lines[i];
+        if (content.length() > (size_t)boxWidth - 4) {
+            content = content.substr(0, boxWidth - 4);
+        }
+        std::cout << left << prefix << "| " << content;
+        std::cout << std::string(boxWidth - 4 - content.length(), ' ') << " |" << suffix << std::endl;
+    }
+    std::cout << left << prefix << border << suffix << std::endl << std::endl;
 }
 
 int InputValidator::getValidatedIntInput(int minVal, int maxVal, const std::string& prompt) {
@@ -337,9 +385,13 @@ static void printBoxed(const std::string& content) {
 }
 
 std::string InputValidator::boxedInputString(const std::string& prompt) {
+    return boxedInputString(prompt, false);
+}
+
+std::string InputValidator::boxedInputString(const std::string& prompt, bool allowCancel) {
     printBoxed(prompt);
     std::string pad( ((80-60)/2) + 2, ' ');
-    return getValidatedStringInput(pad + "> " + prompt);
+    return getValidatedStringInput(pad + "> " + prompt, allowCancel);
 }
 
 int InputValidator::boxedInputInt(const std::string& prompt, int minVal, int maxVal) {

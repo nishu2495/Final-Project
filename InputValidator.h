@@ -13,11 +13,15 @@ public:
 
     // String input validation
     static std::string getValidatedStringInput(const std::string& prompt);
+    static std::string getValidatedStringInput(const std::string& prompt, bool allowCancel);
     static std::string getValidatedStringInput(const std::string& prompt, 
                                                int minLen, int maxLen);
+    static std::string getValidatedStringInput(const std::string& prompt, 
+                                               int minLen, int maxLen, bool allowCancel);
 
     // Contact validation
     static std::string getValidatedPhoneInput();
+    static std::string getValidatedPhoneInput(bool allowCancel);
 
     // Password input
     static std::string getValidatedPasswordInput(const std::string& prompt);
@@ -45,6 +49,7 @@ public:
     static int getValidatedIntInput(int minVal, int maxVal, const std::string& prompt);
     // Boxed input UI
     static std::string boxedInputString(const std::string& prompt);
+    static std::string boxedInputString(const std::string& prompt, bool allowCancel);
     static int boxedInputInt(const std::string& prompt, int minVal, int maxVal);
     static double boxedInputDouble(const std::string& prompt, double minVal, double maxVal);
 };

@@ -79,7 +79,11 @@ bool Booking::isBooked() const {
 }
 
 long Booking::getDurationInSeconds() const {
-    return slotDuration * 60;
+    // For simulation/billing: treat 1 second = 1 minute of booked time.
+    // This returns the booked duration in "simulation seconds" so that
+    // when comparing against actual runtime (in real seconds) the mapping
+    // 1 sec == 1 min is applied.
+    return slotDuration;
 }
 
 double Booking::calculateCost() const {

@@ -72,6 +72,12 @@ void User::deductBalance(double amount) {
     }
 }
 
+void User::forceDeductBalance(double amount) {
+    if (amount > 0) {
+        walletBalance -= amount;
+    }
+}
+
 double User::calculateDiscount(double basePrice) const {
     return 0.0;  // No discount for base User
 }
