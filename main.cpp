@@ -31,16 +31,9 @@ void initializeSampleData();
 void displayMainMenu() {
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        InputValidator::displaySeparator("SMART EV CHARGING NETWORK OPERATIONS PLATFORM");
-        std::cout << "\n       ChargeGrid Mobility Pvt. Ltd.\n\n";
-        std::cout << "1. Admin / Operator Portal\n";
-        std::cout << "2. User Simulation Portal\n";
-        std::cout << "3. Analytics & Reports\n";
-        std::cout << "4. System Backup & Restore\n";
-        std::cout << "5. Exit\n";
-        
-        choice = InputValidator::getValidatedIntInput(1, 5);
+        InputValidator::displayCenteredTitle("SMART EV CHARGING NETWORK OPERATIONS PLATFORM");
+        InputValidator::displayCenteredBlock("ChargeGrid Mobility Pvt. Ltd.\n\n1. Admin / Operator Portal\n2. User Simulation Portal\n3. Analytics & Reports\n4. System Backup & Restore\n5. Exit\n");
+        choice = InputValidator::getValidatedIntInput(1, 5, "Enter choice (1-5): ");
         
         switch (choice) {
             case 1:
@@ -57,7 +50,7 @@ void displayMainMenu() {
                 break;
             case 5:
                 manager.saveAllData();
-                std::cout << "\nThank you for using ChargeGrid Platform!\n";
+                InputValidator::displayCenteredBlock("Thank you for using ChargeGrid Platform!\n");
                 exit(0);
             default:
                 std::cout << "Invalid choice!\n";
@@ -68,15 +61,9 @@ void displayMainMenu() {
 void displayAdminPortal() {
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        InputValidator::displaySeparator("ADMIN / OPERATOR PORTAL");
-        std::cout << "\n1. Station Management\n";
-        std::cout << "2. User Management\n";
-        std::cout << "3. View Real-time Station Status\n";
-        std::cout << "4. Manage Active Bookings\n";
-        std::cout << "5. Back to Main Menu\n";
-        
-        choice = InputValidator::getValidatedIntInput(1, 5);
+        InputValidator::displayCenteredTitle("ADMIN / OPERATOR PORTAL");
+        InputValidator::displayCenteredBlock("1. Station Management\n2. User Management\n3. View Real-time Station Status\n4. Manage Active Bookings\n5. Back to Main Menu\n");
+        choice = InputValidator::getValidatedIntInput(1, 5, "Enter choice (1-5): ");
         
         switch (choice) {
             case 1:
@@ -103,27 +90,19 @@ void displayAdminPortal() {
 void displayStationManagement() {
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        InputValidator::displaySeparator("STATION MANAGEMENT");
-        std::cout << "\n1. Add New Charging Station\n";
-        std::cout << "2. Remove Station\n";
-        std::cout << "3. Update Station Status\n";
-        std::cout << "4. List All Stations\n";
-        std::cout << "5. Search Station by ID\n";
-        std::cout << "6. Back to Admin Menu\n";
-        
-        choice = InputValidator::getValidatedIntInput(1, 6);
+        InputValidator::displayCenteredTitle("STATION MANAGEMENT");
+        InputValidator::displayCenteredBlock("1. Add New Charging Station\n2. Remove Station\n3. Update Station Status\n4. List All Stations\n5. Search Station by ID\n6. Back to Admin Menu\n");
+        choice = InputValidator::getValidatedIntInput(1, 6, "Enter choice (1-6): ");
         
         switch (choice) {
             case 1: {
-                std::cout << "\nAdd New Station\n";
-                std::string id = InputValidator::getValidatedStringInput("Station ID (e.g., ST001): ");
-                std::string name = InputValidator::getValidatedStringInput("Station Name: ");
-                double lat = InputValidator::getValidatedLatitude();
-                double lon = InputValidator::getValidatedLongitude();
-                
-                std::cout << "\nStation Type:\n1. AC\n2. DC Fast\n3. DC Ultra-Fast\n";
-                int type = InputValidator::getValidatedIntInput(1, 3);
+                InputValidator::displayCenteredTitle("Add New Station");
+                std::string id = InputValidator::boxedInputString("Station ID (e.g., ST001): ");
+                std::string name = InputValidator::boxedInputString("Station Name: ");
+                double lat = InputValidator::boxedInputDouble("Latitude (deg) (-90 to 90): ", -90.0, 90.0);
+                double lon = InputValidator::boxedInputDouble("Longitude (deg) (-180 to 180): ", -180.0, 180.0);
+
+                int type = InputValidator::boxedInputInt("Station Type:\n1. AC\n2. DC Fast\n3. DC Ultra-Fast\n", 1, 3);
                 
                 Station* station = NULL;
                 if (type == 1) {
@@ -144,9 +123,9 @@ void displayStationManagement() {
                 break;
             }
             case 2: {
-                std::cout << "\nRemove Station\n";
+                InputValidator::displayCenteredTitle("Remove Station");
                 manager.displayAllStations();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter Station ID to remove (e.g., ST001): ");
+                std::string id = InputValidator::boxedInputString("Enter Station ID to remove (e.g., ST001): ");
                 if (manager.removeStation(id)) {
                     std::cout << "Station removed!\n";
                 } else {
@@ -164,8 +143,8 @@ void displayStationManagement() {
                 InputValidator::pauseForUser();
                 break;
             case 5: {
-                std::cout << "\nSearch Station by ID\n";
-                std::string id = InputValidator::getValidatedStringInput("Enter Station ID (e.g., ST001): ");
+                InputValidator::displayCenteredTitle("Search Station");
+                std::string id = InputValidator::boxedInputString("Enter Station ID (e.g., ST001): ");
                 Station* st = manager.findStationByID(id);
                 if (st != NULL) {
                     st->displayInfo();
@@ -186,26 +165,18 @@ void displayStationManagement() {
 void displayUserManagement() {
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        InputValidator::displaySeparator("USER MANAGEMENT");
-        std::cout << "\n1. Add New User (Register)\n";
-        std::cout << "2. Remove User\n";
-        std::cout << "3. List All Users\n";
-        std::cout << "4. Search User by ID\n";
-        std::cout << "5. View User Details\n";
-        std::cout << "6. Back to Admin Menu\n";
-        
-        choice = InputValidator::getValidatedIntInput(1, 6);
+        InputValidator::displayCenteredTitle("USER MANAGEMENT");
+        InputValidator::displayCenteredBlock("1. Add New User (Register)\n2. Remove User\n3. List All Users\n4. Search User by ID\n5. View User Details\n6. Back to Admin Menu\n");
+        choice = InputValidator::getValidatedIntInput(1, 6, "Enter choice (1-6): ");
         
         switch (choice) {
             case 1: {
-                std::cout << "\nRegister New User\n";
-                std::string id = InputValidator::getValidatedStringInput("User ID (e.g., U001): ");
-                std::string name = InputValidator::getValidatedStringInput("Full Name: ");
+                InputValidator::displayCenteredTitle("Register New User");
+                std::string id = InputValidator::boxedInputString("User ID (e.g., U001): ");
+                std::string name = InputValidator::boxedInputString("Full Name: ");
                 std::string contact = InputValidator::getValidatedPhoneInput();
                 
-                std::cout << "\nUser Tier:\n1. Regular\n2. Premium\n3. Fleet\n";
-                int tier = InputValidator::getValidatedIntInput(1, 3);
+                int tier = InputValidator::boxedInputInt("User Tier:\n1. Regular\n2. Premium\n3. Fleet\n", 1, 3);
                 
                 User* user = NULL;
                 if (tier == 1) {
@@ -226,9 +197,9 @@ void displayUserManagement() {
                 break;
             }
             case 2: {
-                std::cout << "\nRemove User\n";
+                InputValidator::displayCenteredTitle("Remove User");
                 manager.displayAllUsers();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter User ID to remove (e.g., U001): ");
+                std::string id = InputValidator::boxedInputString("Enter User ID to remove (e.g., U001): ");
                 if (manager.removeUser(id)) {
                     std::cout << "User removed!\n";
                 } else {
@@ -242,8 +213,8 @@ void displayUserManagement() {
                 InputValidator::pauseForUser();
                 break;
             case 4: {
-                std::cout << "\nSearch User by ID\n";
-                std::string id = InputValidator::getValidatedStringInput("Enter User ID (e.g., U001): ");
+                InputValidator::displayCenteredTitle("Search User by ID");
+                std::string id = InputValidator::boxedInputString("Enter User ID (e.g., U001): ");
                 User* user = manager.findUserByID(id);
                 if (user != NULL) {
                     user->displayInfo();
@@ -254,9 +225,9 @@ void displayUserManagement() {
                 break;
             }
             case 5: {
-                std::cout << "\nView User Details\n";
+                InputValidator::displayCenteredTitle("View User Details");
                 manager.displayAllUsers();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter User ID (e.g., U001): ");
+                std::string id = InputValidator::boxedInputString("Enter User ID (e.g., U001): ");
                 User* user = manager.findUserByID(id);
                 if (user != NULL) {
                     user->displayInfo();
@@ -277,14 +248,9 @@ void displayUserManagement() {
 void displayActiveBookingsMenu() {
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        InputValidator::displaySeparator("ACTIVE BOOKINGS");
-        std::cout << "\n1. View All Active Bookings\n";
-        std::cout << "2. Cancel Booking (Admin)\n";
-        std::cout << "3. Force End Session\n";
-        std::cout << "4. Back to Admin Menu\n";
-        
-        choice = InputValidator::getValidatedIntInput(1, 4);
+        InputValidator::displayCenteredTitle("ACTIVE BOOKINGS");
+        InputValidator::displayCenteredBlock("1. View All Active Bookings\n2. Cancel Booking (Admin)\n3. Force End Session\n4. Back to Admin Menu\n");
+        choice = InputValidator::getValidatedIntInput(1, 4, "Enter choice (1-4): ");
         
         switch (choice) {
             case 1:
@@ -292,9 +258,9 @@ void displayActiveBookingsMenu() {
                 InputValidator::pauseForUser();
                 break;
             case 2: {
-                std::cout << "\nCancel Booking\n";
+                InputValidator::displayCenteredTitle("Cancel Booking");
                 manager.displayActiveBookings();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter Booking ID to cancel (e.g., B001): ");
+                std::string id = InputValidator::boxedInputString("Enter Booking ID to cancel (e.g., B001): ");
                 if (manager.cancelBooking(id)) {
                     std::cout << "Booking cancelled!\n";
                 } else {
@@ -304,9 +270,9 @@ void displayActiveBookingsMenu() {
                 break;
             }
             case 3: {
-                std::cout << "\nEnd Session\n";
+                InputValidator::displayCenteredTitle("End Session");
                 manager.displayActiveBookings();
-                std::string id = InputValidator::getValidatedStringInput("\nEnter Booking ID to end (e.g., B001): ");
+                std::string id = InputValidator::boxedInputString("Enter Booking ID to end (e.g., B001): ");
                 if (manager.endChargingSession(id)) {
                     std::cout << "Session ended!\n";
                 } else {
@@ -326,23 +292,18 @@ void displayActiveBookingsMenu() {
 void displayUserPortal() {
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        InputValidator::displaySeparator("USER SIMULATION PORTAL");
-        std::cout << "\n1. Register New User\n";
-        std::cout << "2. Login\n";
-        std::cout << "3. Back to Main Menu\n";
-        
-        choice = InputValidator::getValidatedIntInput(1, 3);
+        InputValidator::displayCenteredTitle("USER SIMULATION PORTAL");
+        InputValidator::displayCenteredBlock("1. Register New User\n2. Login\n3. Back to Main Menu\n");
+        choice = InputValidator::getValidatedIntInput(1, 3, "Enter choice (1-3): ");
         
         switch (choice) {
             case 1: {
-                std::cout << "\nRegister New User\n";
-                std::string id = InputValidator::getValidatedStringInput("User ID (e.g., U001): ");
-                std::string name = InputValidator::getValidatedStringInput("Full Name: ");
+                InputValidator::displayCenteredTitle("Register New User");
+                std::string id = InputValidator::boxedInputString("User ID (e.g., U001): ");
+                std::string name = InputValidator::boxedInputString("Full Name: ");
                 std::string contact = InputValidator::getValidatedPhoneInput();
                 
-                std::cout << "\nUser Tier:\n1. Regular\n2. Premium\n3. Fleet\n";
-                int tier = InputValidator::getValidatedIntInput(1, 3);
+                int tier = InputValidator::boxedInputInt("User Tier:\n1. Regular\n2. Premium\n3. Fleet\n", 1, 3);
                 
                 User* user = NULL;
                 if (tier == 1) {
@@ -365,8 +326,8 @@ void displayUserPortal() {
                 break;
             }
             case 2: {
-                std::cout << "\nLogin\n";
-                std::string id = InputValidator::getValidatedStringInput("User ID: ");
+                InputValidator::displayCenteredTitle("Login");
+                std::string id = InputValidator::boxedInputString("User ID: ");
                 User* user = manager.findUserByID(id);
                 if (user != NULL) {
                     std::string pwd = InputValidator::getValidatedPasswordInput("Password: ");
@@ -398,34 +359,28 @@ void displayUserDashboard() {
     
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        std::cout << "\n========== WELCOME, " << loggedInUser->getName() << " ==========" << std::endl;
-        std::cout << "Current Tier: " << loggedInUser->getTier() << std::endl;
-        std::cout << "Wallet Balance: Rs. " << std::fixed << std::setprecision(2) 
-                 << loggedInUser->getWalletBalance() << std::endl << std::endl;
+        InputValidator::displayCenteredTitle("USER DASHBOARD");
+        std::ostringstream welcome;
+        welcome << "========== WELCOME, " << loggedInUser->getName() << " ==========";
+        std::ostringstream status;
+        status << "Current Tier: " << loggedInUser->getTier() << "\n";
+        status << "Wallet Balance: Rs. " << std::fixed << std::setprecision(2) << loggedInUser->getWalletBalance();
+        InputValidator::displayCenteredBlock(welcome.str() + "\n" + status.str() + "\n\n1. Search Available Stations\n2. Book a Charging Slot\n3. View My Bookings\n4. Start Charging Session\n5. End Charging Session\n6. View Charging History\n7. Logout\n");
         
-        std::cout << "1. Search Available Stations\n";
-        std::cout << "2. Book a Charging Slot\n";
-        std::cout << "3. View My Bookings\n";
-        std::cout << "4. Start Charging Session\n";
-        std::cout << "5. End Charging Session\n";
-        std::cout << "6. View Charging History\n";
-        std::cout << "7. Logout\n";
-        
-        choice = InputValidator::getValidatedIntInput(1, 7);
+        choice = InputValidator::getValidatedIntInput(1, 7, "Enter choice (1-7): ");
         
         switch (choice) {
             case 1: {
-                std::cout << "\nAvailable Charging Stations\n";
+                InputValidator::displayCenteredBlock("Available Charging Stations\n");
                 manager.displayAllStations();
                 InputValidator::pauseForUser();
                 break;
             }
             case 2: {
-                std::cout << "\nBook a Charging Slot\n";
+                InputValidator::displayCenteredTitle("Book a Charging Slot");
                 manager.displayAllStations();
-                    std::string stationID = InputValidator::getValidatedStringInput("\nEnter Station ID (e.g., ST001): ");
-                int minutes = InputValidator::getValidatedIntInput(15, 480);
+                    std::string stationID = InputValidator::boxedInputString("Enter Station ID (e.g., ST001): ");
+                int minutes = InputValidator::boxedInputInt("Enter charging duration in minutes (15-480): ", 15, 480);
                 
                 if (manager.bookSlot(loggedInUser->getUserID(), stationID, minutes)) {
                     std::cout << "Booking confirmed!\n";
@@ -436,7 +391,7 @@ void displayUserDashboard() {
                 break;
             }
             case 3: {
-                std::cout << "\nMy Bookings\n";
+                InputValidator::displayCenteredBlock("My Bookings\n");
                 std::vector<Booking*> bookings = manager.findUserBookings(loggedInUser->getUserID());
                 if (bookings.empty()) {
                     std::cout << "No bookings found.\n";
@@ -449,7 +404,7 @@ void displayUserDashboard() {
                 break;
             }
             case 4: {
-                std::cout << "\nStart Charging Session\n";
+                InputValidator::displayCenteredTitle("Start Charging Session");
                 std::vector<Booking*> bookings = manager.findUserBookings(loggedInUser->getUserID());
                 if (bookings.empty()) {
                     std::cout << "No bookings available.\n";
@@ -459,7 +414,7 @@ void displayUserDashboard() {
                             std::cout << (i+1) << ". " << bookings[i]->getBookingID() << std::endl;
                         }
                     }
-                    std::string id = InputValidator::getValidatedStringInput("Enter Booking ID (e.g., B001): ");
+                    std::string id = InputValidator::boxedInputString("Enter Booking ID (e.g., B001): ");
                     if (manager.startChargingSession(id)) {
                         std::cout << "Charging session started!\n";
                     } else {
@@ -470,17 +425,17 @@ void displayUserDashboard() {
                 break;
             }
             case 5: {
-                std::cout << "\nEnd Charging Session\n";
+                InputValidator::displayCenteredTitle("End Charging Session");
                 std::vector<Booking*> bookings = manager.findUserBookings(loggedInUser->getUserID());
                 if (bookings.empty()) {
-                    std::cout << "No active sessions.\n";
+                    InputValidator::displayCenteredBlock("No active sessions.\n");
                 } else {
                     for (size_t i = 0; i < bookings.size(); ++i) {
                         if (bookings[i]->isActive()) {
                             std::cout << (i+1) << ". " << bookings[i]->getBookingID() << std::endl;
                         }
                     }
-                    std::string id = InputValidator::getValidatedStringInput("Enter Booking ID (e.g., B001): ");
+                    std::string id = InputValidator::boxedInputString("Enter Booking ID (e.g., B001): ");
                     if (manager.endChargingSession(id)) {
                         std::cout << "Charging session ended!\n";
                     } else {
@@ -491,7 +446,7 @@ void displayUserDashboard() {
                 break;
             }
             case 6: {
-                std::cout << "\nCharging History\n";
+                InputValidator::displayCenteredBlock("Charging History\n");
                 std::cout << "Total Sessions: " << loggedInUser->getTotalSessions() << std::endl;
                 InputValidator::pauseForUser();
                 break;
@@ -510,17 +465,10 @@ void displayUserDashboard() {
 void displayAnalyticsMenu() {
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        InputValidator::displaySeparator("ANALYTICS & REPORTS");
-        std::cout << "\n1. Revenue Summary Report\n";
-        std::cout << "2. Station Utilization Report\n";
-        std::cout << "3. Top 10 Highest Revenue Stations\n";
-        std::cout << "4. List Inactive Users\n";
-        std::cout << "5. System Analytics Report\n";
-        std::cout << "6. Export Report to File\n";
-        std::cout << "7. Back to Main Menu\n";
+        InputValidator::displayCenteredTitle("ANALYTICS & REPORTS");
+        InputValidator::displayCenteredBlock("1. Revenue Summary Report\n2. Station Utilization Report\n3. Top 10 Highest Revenue Stations\n4. List Inactive Users\n5. System Analytics Report\n6. Export Report to File\n7. Back to Main Menu\n");
         
-        choice = InputValidator::getValidatedIntInput(1, 7);
+        choice = InputValidator::getValidatedIntInput(1, 7, "Enter choice (1-7): ");
         
         switch (choice) {
             case 1:
@@ -532,7 +480,7 @@ void displayAnalyticsMenu() {
                 InputValidator::pauseForUser();
                 break;
             case 3: {
-                std::cout << "\nTop 10 Revenue Stations\n";
+                InputValidator::displayCenteredBlock("Top 10 Revenue Stations\n");
                 std::vector<Station*> topStations = manager.findTopRevenueStations(10);
                 int rank = 1;
                 for (size_t i = 0; i < topStations.size(); ++i) {
@@ -543,7 +491,7 @@ void displayAnalyticsMenu() {
                 break;
             }
             case 4: {
-                std::cout << "\nInactive Users (>30 days)\n";
+                InputValidator::displayCenteredBlock("Inactive Users (>30 days)\n");
                 std::vector<User*> inactiveUsers = manager.findInactiveUsers(30);
                 for (size_t i = 0; i < inactiveUsers.size(); ++i) {
                     std::cout << inactiveUsers[i]->getName() << std::endl;
@@ -556,9 +504,8 @@ void displayAnalyticsMenu() {
                 InputValidator::pauseForUser();
                 break;
             case 6: {
-                std::cout << "\nExport Report\n";
-                std::cout << "1. Export Stations\n2. Export Users\n";
-                int exp = InputValidator::getValidatedIntInput(1, 2);
+                InputValidator::displayCenteredBlock("Export Report\n1. Export Stations\n2. Export Users\n");
+                int exp = InputValidator::getValidatedIntInput(1, 2, "Enter choice (1-2): ");
                 if (exp == 1) {
                     manager.exportToCSV("stations");
                 } else {
@@ -578,16 +525,10 @@ void displayAnalyticsMenu() {
 void displayMaintenanceMenu() {
     int choice;
     while (true) {
-        InputValidator::clearScreen();
-        InputValidator::displaySeparator("SYSTEM MAINTENANCE");
-        std::cout << "\n1. Create Full System Backup\n";
-        std::cout << "2. Restore System from Backup\n";
-        std::cout << "3. Export All Stations to CSV\n";
-        std::cout << "4. Export All Users to CSV\n";
-        std::cout << "5. System Status\n";
-        std::cout << "6. Back to Main Menu\n";
+        InputValidator::displayCenteredTitle("SYSTEM MAINTENANCE");
+        InputValidator::displayCenteredBlock("1. Create Full System Backup\n2. Restore System from Backup\n3. Export All Stations to CSV\n4. Export All Users to CSV\n5. System Status\n6. Back to Main Menu\n");
         
-        choice = InputValidator::getValidatedIntInput(1, 6);
+        choice = InputValidator::getValidatedIntInput(1, 6, "Enter choice (1-6): ");
         
         switch (choice) {
             case 1:
@@ -634,10 +575,24 @@ void initializeSampleData() {
     manager.addUser(new PremiumUser("U005", "Karthik Rajan", "9345678901", 2150.25));
     
     std::cout << "Sample data initialized!\n";
+
+    // Populate a few completed sessions for analytics/demo purposes
+    manager.bookSlot("U001", "ST001", 30);
+    manager.bookSlot("U002", "ST002", 45);
+    manager.bookSlot("U003", "ST003", 60);
+
+    std::vector<Booking*> bks1 = manager.findUserBookings("U001");
+    if (!bks1.empty()) { manager.startChargingSession(bks1[0]->getBookingID()); manager.endChargingSession(bks1[0]->getBookingID()); }
+    std::vector<Booking*> bks2 = manager.findUserBookings("U002");
+    if (!bks2.empty()) { manager.startChargingSession(bks2[0]->getBookingID()); manager.endChargingSession(bks2[0]->getBookingID()); }
+    std::vector<Booking*> bks3 = manager.findUserBookings("U003");
+    if (!bks3.empty()) { manager.startChargingSession(bks3[0]->getBookingID()); manager.endChargingSession(bks3[0]->getBookingID()); }
 }
 
 int main() {
     std::cout << "Loading Smart EV Charging Network Platform...\n";
+    // Ask user for preferred console color theme (CMD/Terminal)
+    InputValidator::chooseConsoleColor();
     manager.loadAllData();
     
     // Initialize sample data if no data exists

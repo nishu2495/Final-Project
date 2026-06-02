@@ -34,6 +34,19 @@ public:
 
     // Display menu separator
     static void displaySeparator(const std::string& title = "");
+
+    // Console color utilities
+    static void chooseConsoleColor();
+    static void setConsoleColorByChoice(int choice);
+    static void resetConsoleColor();
+    static std::string currentColorCode();
+    static void displayCenteredTitle(const std::string& title);
+    static void displayCenteredBlock(const std::string& text);
+    static int getValidatedIntInput(int minVal, int maxVal, const std::string& prompt);
+    // Boxed input UI
+    static std::string boxedInputString(const std::string& prompt);
+    static int boxedInputInt(const std::string& prompt, int minVal, int maxVal);
+    static double boxedInputDouble(const std::string& prompt, double minVal, double maxVal);
 };
 
 #endif
