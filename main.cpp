@@ -1,4 +1,3 @@
-// Copy of src/main.cpp: full implementation
 #include "EVChargingManager.h"
 #include "InputValidator.h"
 #include "Station.h"

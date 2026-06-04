@@ -209,34 +209,9 @@ void InputValidator::clearScreen() {
     #endif
 }
 
-void InputValidator::displaySeparator(const std::string& title) {
-    std::string prefix = _currentColor.empty() ? "" : _currentColor;
-    std::string suffix = _currentColor.empty() ? "" : ANSI_RESET;
-
-    if (title.empty()) {
-        std::cout << prefix << "\n=================================================="
-                  << "==================================================\n" << suffix;
-    } else {
-        std::cout << prefix << "\n========== " << title << " ==========" << std::endl << suffix;
-    }
-}
-
 void InputValidator::chooseConsoleColor() {
     std::cout << "\nConsole color theme: Magenta\n";
     _currentColor = ANSI_MAGENTA;
-}
-
-void InputValidator::setConsoleColorByChoice(int choice) {
-    _currentColor = ANSI_MAGENTA;
-}
-
-void InputValidator::resetConsoleColor() {
-    _currentColor.clear();
-    std::cout << ANSI_RESET;
-}
-
-std::string InputValidator::currentColorCode() {
-    return _currentColor;
 }
 
 void InputValidator::displayCenteredTitle(const std::string& title) {

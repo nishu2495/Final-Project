@@ -36,14 +36,8 @@ public:
     // Clear screen
     static void clearScreen();
 
-    // Display menu separator
-    static void displaySeparator(const std::string& title = "");
-
     // Console color utilities
     static void chooseConsoleColor();
-    static void setConsoleColorByChoice(int choice);
-    static void resetConsoleColor();
-    static std::string currentColorCode();
     static void displayCenteredTitle(const std::string& title);
     static void displayCenteredBlock(const std::string& text);
     static int getValidatedIntInput(int minVal, int maxVal, const std::string& prompt);
