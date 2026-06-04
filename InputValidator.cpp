@@ -222,24 +222,12 @@ void InputValidator::displaySeparator(const std::string& title) {
 }
 
 void InputValidator::chooseConsoleColor() {
-    std::cout << "\nChoose console color theme:\n";
-    std::cout << "1. Default\n2. Red\n3. Green\n4. Yellow\n5. Blue\n6. Magenta\n7. Cyan\n";
-    int choice = 1;
-    std::cin >> choice;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    setConsoleColorByChoice(choice);
+    std::cout << "\nConsole color theme: Magenta\n";
+    _currentColor = ANSI_MAGENTA;
 }
 
 void InputValidator::setConsoleColorByChoice(int choice) {
-    switch (choice) {
-        case 2: _currentColor = ANSI_RED; break;
-        case 3: _currentColor = ANSI_GREEN; break;
-        case 4: _currentColor = ANSI_YELLOW; break;
-        case 5: _currentColor = ANSI_BLUE; break;
-        case 6: _currentColor = ANSI_MAGENTA; break;
-        case 7: _currentColor = ANSI_CYAN; break;
-        default: _currentColor = ""; break;
-    }
+    _currentColor = ANSI_MAGENTA;
 }
 
 void InputValidator::resetConsoleColor() {
