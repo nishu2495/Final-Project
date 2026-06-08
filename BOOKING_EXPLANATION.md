@@ -11,6 +11,25 @@ The booking feature in this EV charging platform allows users to reserve a charg
 - `main.cpp`: Contains the user menu flows that invoke booking operations.
 - `data/bookings.csv`: Stores booking records for persistence between runs.
 
+## 2.1 Connections to Other Code
+
+- `main.cpp` calls booking operations through `EVChargingManager manager`.
+  - `manager.bookSlot(loggedInUser->getUserID(), stationID, minutes)` in the "Book a Charging Slot" flow.
+  - `manager.findUserBookings(loggedInUser->getUserID())` in "View My Bookings", "Start Charging Session", and "End Charging Session".
+  - `manager.startChargingSession(id)` in the "Start Charging Session" option.
+  - `manager.endChargingSession(id)` in the "End Charging Session" option.
+  - Admin flows also call `manager.displayActiveBookings()` and `manager.cancelBooking(id)`.
+- `EVChargingManager.cpp` contains the functions that connect `Booking` to application logic:
+  - `bookSlot()` creates `Booking` objects and reserves station capacity.
+  - `findBookingByID()` looks up a booking by the booking ID.
+  - `findUserBookings()` returns bookings for a user.
+  - `cancelBooking()` cancels a booking and updates station occupancy.
+  - `startChargingSession()` updates a booking to active state.
+  - `endChargingSession()` closes a booking, computes cost, creates a `ChargingSession`, and removes the booking.
+  - `loadBookings()` reads `data/bookings.csv` and rehydrates `Booking` objects on startup.
+  - `saveAllData()` / `saveBookings()` persist the current booking state back to `data/bookings.csv`.
+- `Booking.cpp` methods such as `displayInfo()`, `isBooked()`, `isActive()`, `getBookingID()`, and `calculateCost()` are used by both `main.cpp` and `EVChargingManager.cpp`.
+
 ## 3. Booking Class Overview
 
 ### 3.1 Data Members
